@@ -1,0 +1,4 @@
+* {
+    --primary-color:#ff4444;
+    --maintenance-svg: url('./Maintenance.svg');
+}

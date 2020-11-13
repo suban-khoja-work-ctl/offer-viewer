@@ -1,0 +1,140 @@
+<html>
+    <head>
+       <link rel="stylesheet" href="./main.css"/>
+    </head>
+    <body>
+        
+        <header>
+            <img src='./logo.svg' />
+            <span>Suban Khoja</span>
+        </header>
+        
+        <div class="result-container hide">
+            <div class="container">
+                <table id="ctl-table">
+                </table>
+            </div>
+            <div class="btn-container">
+                <button class="btn-css btn-large" onclick="reset()">Reset</button>
+            </div>
+        </div>  
+
+        <div class="input-container ">
+            <textarea rows="22" cols="10" placeholder="Enter Qualify Response"></textarea>
+            <div class="btn-container">
+                <button class="btn-css btn-large" onclick="process()">Process</button>
+            </div>
+        </div>
+        
+    </body>
+    <script>
+
+        function switchToResult(){
+            document.getElementsByClassName('input-container')[0].classList.add('hide');
+            document.getElementsByClassName('result-container')[0].classList.remove('hide');
+        }
+
+        function switchToInput(){
+            document.getElementsByClassName('input-container')[0].classList.remove('hide');
+            document.getElementsByClassName('result-container')[0].classList.add('hide');
+        }
+
+        function reset(){
+            location.reload();
+        }
+
+        function validateResponse(){
+            let responseStr = document.getElementsByTagName('textarea')[0].value; 
+            if(!responseStr);
+            try{
+                responseStr = JSON.parse(responseStr);
+                if(responseStr.qualifyResponse.productDetails) return true;
+            }catch(e){
+                return false;
+            }
+        }
+
+        function process(){
+            if(!validateResponse()) return;
+            
+            switchToResult();
+            processResponse();
+        }
+
+        function processResponse(){
+
+            let data = document.getElementsByTagName('textarea')[0].value;
+            data = JSON.parse(data).qualifyResponse.productDetails;
+            
+            let response = [];
+    
+            const table_ele = document.getElementById('ctl-table');
+    
+            for(let i=0;i<data.length;i++){
+    
+                let tr_ele = document.createElement('tr');
+    
+                let td_index = document.createElement('td');
+                td_index.innerText = (i+1);
+                td_index.classList.add('index-css');
+    
+                let td_fm = document.createElement('td');
+                let family = data[i].offerResponse.offerDetails.productFamily;
+                td_fm.innerText = family
+                if(family === 'Internet/Voice Bundle')
+                    td_fm.classList.add('fm-b-css');
+                if(family === 'Voice')
+                    td_fm.classList.add('fm-v-css');
+                if(family === 'INTERNET')
+                    td_fm.classList.add('fm-i-css');
+    
+                let td_pc = document.createElement('td');
+                let downloadSpeed = Number(data[i].offerResponse.downloadSpeed);
+                if((downloadSpeed/1000) < 1){
+                    downloadSpeed += 'K' 
+                }else if ((downloadSpeed/1000) > 1){
+                    downloadSpeed = downloadSpeed/1000 + 'M';
+                }
+
+                let uploadSpeed = Number(data[i].offerResponse.uploadSpeed);
+                if((uploadSpeed/1000) < 1){
+                    uploadSpeed += 'K' 
+                }else if ((uploadSpeed/1000) > 1){
+                    uploadSpeed = uploadSpeed/1000 + 'M';
+                }
+
+                td_pc.innerText = (data[i].offerResponse.offerDetails.productFamily === 'Voice')?'':downloadSpeed+' / '+ uploadSpeed;
+                td_pc.classList.add('pc-css');
+    
+                
+                let td_ot = document.createElement('td');
+                let offerType = data[i].offerResponse.offerDetails.offerType
+                td_ot.innerText = offerType;
+                if(offerType === 'Product')
+                    td_ot.classList.add('ot-pd-css');
+                if(offerType === 'Promotion')
+                    td_ot.classList.add('ot-pr-css');
+    
+                let td_bt = document.createElement('td');
+                let billingTypeList = data[i].offerResponse.offerDetails.attributeCategory.CTL_PARTNER_ATTRIBUTE_CATEGORY_GENERIC_DETAILS.filter(function(categoryItem){
+                    return (categoryItem.attributeuniquecode === 'CTL_PARTNER_ATTR_BILLING_TYPE');
+                });
+                let billingType = billingTypeList[0].value
+                td_bt.innerText = billingType;
+                if(billingType === 'Prepaid')
+                    td_bt.classList.add('bt-pr-css');
+                if(billingType === 'Postpaid')
+                    td_bt.classList.add('bt-ps-css');
+    
+    
+                tr_ele.appendChild(td_index);
+                tr_ele.appendChild(td_fm);
+                tr_ele.appendChild(td_pc);
+                tr_ele.appendChild(td_ot);
+                tr_ele.appendChild(td_bt);
+   
+                table_ele.appendChild(tr_ele);
+            }
+        }
+    </script>
+</html>
