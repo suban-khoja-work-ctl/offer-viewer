@@ -43,13 +43,12 @@ header > h1:first{
 }
 
 header > span {
-    margin: 0.5em 1.5em;
+    background: var(--secondary-color);
+    margin: 0.25em 1em;
     color: white;
     font-family: consolas;
     font-size: 1.2em;
-    border: 1px solid white;
-    padding: 0.5em;
-    border-radius: 5px;
+    padding: 5px;
 }
 
 
